@@ -7,7 +7,7 @@ export const Logo = () => {
             <h2 className="flex items-center gap-2">
                 <ScanQrCode className="h-8 w-8 text-blue-600" />
                 <span className="text-xl font-bold text-gray-900">
-                    TrackQR<span className="text-blue-600">Pro</span>
+                    Tiyo<span className="text-blue-600">Pro</span>
                 </span>
             </h2>
         </div>

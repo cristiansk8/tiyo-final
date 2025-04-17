@@ -1,1 +1,0 @@
-export {getUserByEmail} from './get-user.action'

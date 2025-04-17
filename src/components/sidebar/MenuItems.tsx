@@ -1,25 +1,12 @@
-import { IoQrCode } from "react-icons/io5";
-import { User, SquarePlus, CreditCard, CircleHelp, ChartBarBigIcon, Settings } from 'lucide-react';
+import { User, CreditCard, CircleHelp, ChartBarBigIcon, Settings } from 'lucide-react';
 import { MenuItem } from "./types";
 
 export const MENU_ITEMS: MenuItem[] = [
     {
-        path: '/dashboard/user/qrs',
-        icon: <IoQrCode className="h-6 w-6 text-blue-500" />,
-        title: 'QR Codes',
-        subTitle: 'Manage your QR codes'
-    },
-    {
-        path: '/dashboard/user/newqr',
-        icon: <SquarePlus className="h-6 w-6 text-blue-500" />,
-        title: 'New QR Code',
-        subTitle: 'Create a QR code'
-    },
-    {
         path: '/dashboard/user/stats',
         icon: <ChartBarBigIcon className="h-6 w-6 text-blue-500" />,
         title: 'Statistics',
-        subTitle: 'Track QR scans'
+        subTitle: 'check data'
     },
     {
         path: '/dashboard/user/profile',
