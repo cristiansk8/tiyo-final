@@ -7,7 +7,7 @@ export default function CategoryForm() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [selectedCategories, setSelectedCategories] = useState<number[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [userId, setUserId] = useState(""); // ID del usuario actual
+  const [userId] = useState(""); // ID del usuario actual
 
   useEffect(() => {
     const fetchData = async () => {
