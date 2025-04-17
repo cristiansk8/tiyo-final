@@ -14,44 +14,67 @@ datasource db {
   directUrl = env("DIRECT_URL")
 }
 
-enum Plan {
-  Basic
-  Pro
-  Enterprise
-}
-
 model User {
-  id    Int     @id @default(autoincrement())
-  email String  @unique
-  name  String?
-  phone String?
-  photo String?
-  plan  Plan    @default(Basic)
-  // Relación con QR
-  qr    qr[]    @relation(name: "UserTasks")
+  id         String         @id @default(uuid())
+  name       String?
+  email      String         @unique
+  phone      String?
+  photo      String?
+  plan       Plan           @default(Basic)
+  facebook   String?
+  instagram  String?
+  createdAt  DateTime       @default(now())
+  updatedAt  DateTime       @updatedAt
+  qrCodes    QRCode[]
+  categories UserCategory[]
 }
 
-model qr {
-  id          Int      @id @default(autoincrement())
+model QRCode {
+  id          String   @id @default(uuid())
   name        String
   description String?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
-  scanCount   Int?
-  cont        String?
-  qrCode      String?
-  hash        String?  @unique
-
-  user      User   @relation(fields: [userEmail], references: [email], name: "UserTasks")
-  userEmail String
-
-  scans Scan[] @relation("QRScans")
+  scanCount   Int      @default(0)
+  content     String?
+  qrImage     String?
+  hash        String   @unique
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+  scans       Scan[]
 }
 
 model Scan {
-  id        Int      @id @default(autoincrement())
-  qrId      Int
-  qr        qr       @relation(fields: [qrId], references: [id], name: "QRScans", onDelete: Cascade) // ✅ Aquí sí va onDelete
+  id        String   @id @default(uuid())
   scannedAt DateTime @default(now())
   ip        String?
+  location  String?
+  qrCodeId  String
+  qrCode    QRCode   @relation(fields: [qrCodeId], references: [id])
+}
+
+model Category {
+  id     Int            @id @default(autoincrement())
+  name   String
+  slug   String         @unique
+  active Boolean        @default(true)
+  users  UserCategory[]
+}
+
+model UserCategory {
+  userId     String
+  categoryId Int
+  selected   Boolean  @default(true)
+  createdAt  DateTime @default(now())
+  category   Category @relation(fields: [categoryId], references: [id])
+  user       User     @relation(fields: [userId], references: [id])
+
+  @@id([userId, categoryId])
+  @@map("user_categories")
+}
+
+enum Plan {
+  Basic
+  Pro
+  Enterprise
 }

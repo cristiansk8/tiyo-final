@@ -4,7 +4,7 @@ import { NextResponse } from 'next/server';
 export async function POST(req: Request) {
     try {
       const body = await req.json(); // Obtiene los datos del request
-      const { email, name, phone, photo } = body;
+      const { email, name, phone, photo, facebook, instagram } = body;
   
       // Verifica si el usuario ya existe por email
       const existingUser = await prisma.user.findUnique({
@@ -22,6 +22,8 @@ export async function POST(req: Request) {
           name,
           phone,
           photo,
+          instagram,
+          facebook
         },
       });
   
@@ -32,14 +34,16 @@ export async function POST(req: Request) {
     }
   }
 // Servicio para verificar si el usuario está registradoimport prisma from '@/app/lib/prisma';
-
 export async function GET(req: Request) {
   try {
     const { searchParams } = new URL(req.url);
     const email = searchParams.get('email');
 
     if (!email) {
-      return NextResponse.json({ error: 'Email es requerido' }, { status: 400 });
+      return NextResponse.json(
+        { error: 'Email es requerido' },
+        { status: 400 }
+      );
     }
 
     const user = await prisma.user.findUnique({
@@ -47,23 +51,42 @@ export async function GET(req: Request) {
       select: {
         name: true,
         phone: true,
+        facebook: true,
+        instagram: true,
+        photo: true
       },
     });
 
     if (!user) {
-      return NextResponse.json({ error: 'Usuario no encontrado' }, { status: 404 });
+      return NextResponse.json(
+        { error: 'Usuario no encontrado' },
+        { status: 404 }
+      );
     }
 
-    return NextResponse.json({ user }, { status: 200 });
+    // Configura headers CORS para permitir acceso desde otros dominios
+    const headers = {
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'GET',
+      'Content-Type': 'application/json',
+    };
+
+    return NextResponse.json(
+      { user },
+      { status: 200, headers }
+    );
   } catch (error) {
-    console.error('Error obteniendo datos del usuario:', error);
-    return NextResponse.json({ error: 'Error en el servidor' }, { status: 500 });
+    console.error('Error:', error);
+    return NextResponse.json(
+      { error: 'Error en el servidor' },
+      { status: 500 }
+    );
   }
 }
 export async function PUT(req: Request) {
   try {
     const body = await req.json();
-    const { email, name, phone } = body;
+    const { email, name, phone, facebook, instagram } = body;
 
     if (!email) {
       return NextResponse.json({ error: 'Email es requerido' }, { status: 400 });
@@ -74,6 +97,8 @@ export async function PUT(req: Request) {
       data: {
         name,
         phone,
+        facebook,
+        instagram
       },
     });
 

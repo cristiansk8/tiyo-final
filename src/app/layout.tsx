@@ -16,8 +16,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Track QR pro",
-  description: "Generate QR in seconds",
+  title: "Tiyo",
+  description: "Genera catalogo en segundos",
 };
 
 export default function RootLayout({
