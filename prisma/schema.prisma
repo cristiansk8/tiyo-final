@@ -1,0 +1,57 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+enum Plan {
+  Basic
+  Pro
+  Enterprise
+}
+
+model User {
+  id    Int     @id @default(autoincrement())
+  email String  @unique
+  name  String?
+  phone String?
+  photo String?
+  plan  Plan    @default(Basic)
+  // Relación con QR
+  qr    qr[]    @relation(name: "UserTasks")
+}
+
+model qr {
+  id          Int      @id @default(autoincrement())
+  name        String
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  scanCount   Int?
+  cont        String?
+  qrCode      String?
+  hash        String?  @unique
+
+  user      User   @relation(fields: [userEmail], references: [email], name: "UserTasks")
+  userEmail String
+
+  scans Scan[] @relation("QRScans")
+}
+
+model Scan {
+  id        Int      @id @default(autoincrement())
+  qrId      Int
+  qr        qr       @relation(fields: [qrId], references: [id], name: "QRScans", onDelete: Cascade) // ✅ Aquí sí va onDelete
+  scannedAt DateTime @default(now())
+  ip        String?
+}
