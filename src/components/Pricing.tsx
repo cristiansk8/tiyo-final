@@ -13,23 +13,25 @@ type Plan = {
 
 const plans: Plan[] = [
   {
-    title: "Basic",
+    title: "Basico",
     price: "0",
-    features: ["Up to 5 QR codes", "Basic scan data", "Email support"],
-    buttonLabel: "Get Started"
+    features: ["Landing page", "Informes basicos de datos", "Soporte por Email"],
+    buttonLabel: "Empezar",
+    variant: "outline"
+  },
+  {
+    title: "Empresa",
+    price: "50.000",
+    features: ["Landing page administrable", "Informes avanzado de datos", "Soporte prioritario"],
+    buttonLabel: "Empezar",
+    highlighted: true,
+    variant: "outline"
   },
   {
     title: "Pro",
-    price: "29",
-    features: ["50 QR codes", "Advanced scan data", "Priority support"],
-    buttonLabel: "Get Started",
-    highlighted: true
-  },
-  {
-    title: "Enterprise",
-    price: "Custom",
-    features: ["Unlimited QR codes", "Custom integrations", "24/7 support"],
-    buttonLabel: "Contact Sales",
+    price: "ajustable",
+    features: ["Landing page administrable", "Informes avanzado de datos", "Soporte 24/7", "Integraciones con terceros", "Capacitaciones", "Apoyo tecnologico"],
+    buttonLabel: "Contactar equipo ventas",
     variant: "outline"
   }
 ];
@@ -40,9 +42,9 @@ export function Pricing() {
       <div className="py-12 md:py-24 w-full max-w-4xl mx-auto">
         <div className="container mx-auto px-4">
           <div className="mb-12 text-center">
-            <h2 className="text-3xl font-bold text-gray-900 md:text-4xl">Choose Your Plan</h2>
+            <h2 className="text-3xl font-bold text-gray-900 md:text-4xl">Elije tu plan</h2>
             <p className="mx-auto mt-4 max-w-xl text-gray-600">
-              Select the perfect plan for your needs. Upgrade or downgrade at any time.
+            Selecciona el plan perfecto para tus necesidades. Puedes cambiar de plan en cualquier momento.
             </p>
           </div>
           <div className="grid gap-8 md:grid-cols-3">
@@ -52,7 +54,7 @@ export function Pricing() {
                   <CardTitle className="text-gray-900">{plan.title}</CardTitle>
                   <div className="flex items-baseline gap-2">
                     <span className="text-4xl font-bold text-gray-900">${plan.price}</span>
-                    <span className="text-gray-600">/month</span>
+                    <span className="text-gray-600">/mes</span>
                   </div>
                 </CardHeader>
                 <CardContent>
