@@ -1,33 +1,66 @@
 'use client';
-import { useEffect, useState } from "react";
-import getCategories, { Category } from "./getCategories";
-import { Check, X, Loader2 } from "lucide-react";
+import { useState, useEffect } from 'react';
+import { Check, X, Loader2 } from 'lucide-react';
+import { useSession } from 'next-auth/react';
+
+interface UserCategory {
+  categoryId: string;
+  name: string;
+  selected: boolean;
+  createdAt?: string;
+}
 
 export default function CategoryForm() {
-  const [categories, setCategories] = useState<Category[]>([]);
-  const [selectedCategories, setSelectedCategories] = useState<number[]>([]);
+  const { data: session, status } = useSession();
+  const [categories, setCategories] = useState<UserCategory[]>([]);
+  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [userId] = useState(""); // ID del usuario actual
+  const [initialLoad, setInitialLoad] = useState(true);
+  const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+
+  const fetchUserCategories = async (): Promise<UserCategory[]> => {
+    try {
+      if (status !== 'authenticated' || !session?.user?.email) {
+        console.error('Sesión no disponible o falta email');
+        return [];
+      }
+
+      const emailParam = encodeURIComponent(session.user.email);
+      const response = await fetch(`/api/cat?email=${emailParam}`);
+      
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`Error ${response.status}: ${errorText}`);
+      }
+      
+      return await response.json();
+    } catch (error) {
+      console.error('Error fetching categories:', error);
+      return [];
+    }
+  };
 
   useEffect(() => {
-    const fetchData = async () => {
+    const loadData = async () => {
+      if (status === 'loading') return;
+      
       try {
-        const data = await getCategories();
-        setCategories(data);
-        // Inicializar todas seleccionadas
-        setSelectedCategories(data.map(cat => cat.id));
-        
-        // Obtener ID del usuario (ajusta según tu auth system)
-        // Ejemplo: const user = await getCurrentUser();
-        // setUserId(user.id);
+        const userCategories = await fetchUserCategories();
+        setCategories(userCategories);
+        setSelectedCategories(
+          userCategories.filter(cat => cat.selected).map(cat => cat.categoryId)
+        );
       } catch (error) {
-        console.error("Error loading data:", error);
+        console.error('Error loading data:', error);
+      } finally {
+        setInitialLoad(false);
       }
     };
-    fetchData();
-  }, []);
 
-  const handleToggle = (id: number) => {
+    loadData();
+  }, [status, session]);
+
+  const handleToggle = (id: string) => {
     setSelectedCategories(prev =>
       prev.includes(id)
         ? prev.filter(catId => catId !== id)
@@ -38,19 +71,71 @@ export default function CategoryForm() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
+    setMessage(null); // limpiar mensaje anterior
+
+    try {
+      if (!session?.user?.email) {
+        throw new Error('No hay sesión activa');
+      }
+
+      const response = await fetch('/api/cat', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: session.user.email,
+          selectedCategories
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error('Error al guardar preferencias');
+      }
+
+      setMessage({ type: 'success', text: 'Preferencias actualizadas correctamente' });
+    } catch (error) {
+      setMessage({
+        type: 'error',
+        text: error instanceof Error ? error.message : 'Error desconocido'
+      });
+    } finally {
+      setIsSubmitting(false);
+      setTimeout(() => setMessage(null), 4000); // Ocultar después de 4s
+    }
   };
+
+  if (initialLoad) {
+    return (
+      <div className="flex justify-center items-center h-64">
+        <Loader2 className="animate-spin h-8 w-8 text-blue-500" />
+      </div>
+    );
+  }
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       <div className="p-4">
+        {message && (
+          <div
+            className={`mb-4 p-3 rounded-lg text-sm font-medium ${
+              message.type === 'success'
+                ? 'bg-green-100 text-green-800 border border-green-300'
+                : 'bg-red-100 text-red-800 border border-red-300'
+            }`}
+          >
+            {message.text}
+          </div>
+        )}
+
         <div className="grid grid-cols-2 gap-2 mb-4">
           {categories.map((cat) => {
-            const isSelected = selectedCategories.includes(cat.id);
+            const isSelected = selectedCategories.includes(cat.categoryId);
             return (
               <button
-                type="button" // Importante para forms
-                key={cat.id}
-                onClick={() => handleToggle(cat.id)}
+                type="button"
+                key={cat.categoryId}
+                onClick={() => handleToggle(cat.categoryId)}
                 className={`flex items-center justify-between p-3 rounded-lg transition-all ${
                   isSelected
                     ? 'bg-green-100/50 border-2 border-green-300'
@@ -81,7 +166,7 @@ export default function CategoryForm() {
           
           <button
             type="submit"
-            disabled={isSubmitting || !userId}
+            disabled={isSubmitting}
             className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg disabled:opacity-50 flex items-center gap-2"
           >
             {isSubmitting ? (
@@ -90,7 +175,7 @@ export default function CategoryForm() {
                 Guardando...
               </>
             ) : (
-              "Guardar preferencias"
+              'Guardar preferencias'
             )}
           </button>
         </div>

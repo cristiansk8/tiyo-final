@@ -25,51 +25,19 @@ model User {
   instagram  String?
   createdAt  DateTime       @default(now())
   updatedAt  DateTime       @updatedAt
-  qrCodes    QRCode[]
   categories UserCategory[]
 }
 
-model QRCode {
-  id          String   @id @default(uuid())
-  name        String
-  description String?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  scanCount   Int      @default(0)
-  content     String?
-  qrImage     String?
-  hash        String   @unique
-  userId      String
-  user        User     @relation(fields: [userId], references: [id])
-  scans       Scan[]
-}
-
-model Scan {
-  id        String   @id @default(uuid())
-  scannedAt DateTime @default(now())
-  ip        String?
-  location  String?
-  qrCodeId  String
-  qrCode    QRCode   @relation(fields: [qrCodeId], references: [id])
-}
-
-model Category {
-  id     Int            @id @default(autoincrement())
-  name   String
-  slug   String         @unique
-  active Boolean        @default(true)
-  users  UserCategory[]
-}
-
 model UserCategory {
-  userId     String
-  categoryId Int
-  selected   Boolean  @default(true)
-  createdAt  DateTime @default(now())
-  category   Category @relation(fields: [categoryId], references: [id])
-  user       User     @relation(fields: [userId], references: [id])
+  userEmail    String    @map("user_email")
+  categoryId   String
+  name         String    // Changed from categoryName to name
+  selected     Boolean   @default(true)
+  createdAt    DateTime  @default(now())
+  
+  user         User      @relation(fields: [userEmail], references: [email])
 
-  @@id([userId, categoryId])
+  @@id([userEmail, categoryId])
   @@map("user_categories")
 }
 

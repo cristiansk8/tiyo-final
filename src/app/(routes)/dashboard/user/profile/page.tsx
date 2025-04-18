@@ -1,13 +1,14 @@
 "use client";
 import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
-import CategoryToggleList from "./categoriesList";
+import CategoryForm from "./categoriesList";
 
 export default function ProfilePage() {
   const { data: session, status } = useSession();
   const [isClient, setIsClient] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [notification, setNotification] = useState("");
+  const [message, setMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null);
+
 
   const [formData, setFormData] = useState({
     name: "",
@@ -53,10 +54,10 @@ export default function ProfilePage() {
   const handleSubmitUpdateProfile = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
-    setNotification("");
+    setMessage(null); // Limpiar mensaje anterior
 
     if (!session?.user) {
-      setNotification("⚠️ No estás autenticado.");
+      setMessage({ type: 'error', text: '⚠️ No estás autenticado.' });
       setLoading(false);
       return;
     }
@@ -69,23 +70,23 @@ export default function ProfilePage() {
           email: session.user.email,
           name: formData.name,
           phone: formData.phone,
-          instagram: formData.instagram, // Incluir nuevo campo
-          facebook: formData.facebook    // Incluir nuevo campo
+          instagram: formData.instagram,
+          facebook: formData.facebook
         }),
       });
 
       const data = await response.json();
       if (data.error) throw new Error(data.error);
 
-      setNotification("✅ Perfil actualizado con éxito.");
-      setTimeout(() => {
-        setNotification("");
-      }, 5000);
+      setMessage({ type: 'success', text: '✅ Perfil actualizado con éxito.' });
     } catch (error) {
-      setNotification("❌ Error al actualizar el perfil. Inténtalo de nuevo.");
-      console.error('Error al actualizar:', error);
+      setMessage({
+        type: 'error',
+        text: error instanceof Error ? error.message : '❌ Error al actualizar el perfil.'
+      });
     } finally {
       setLoading(false);
+      setTimeout(() => setMessage(null), 4000);
     }
   };
 
@@ -93,9 +94,12 @@ export default function ProfilePage() {
 
   return (
     <div className="text-black">
-      {notification && (
-        <div className={`mt-4 p-2 text-white rounded ${notification.includes("Error") ? "bg-red-500" : "bg-green-500"}`}>
-          {notification}
+      {message && (
+        <div
+          className={`text-sm px-4 py-2 rounded-md mb-4 ${message.type === 'success' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+            }`}
+        >
+          {message.text}
         </div>
       )}
 
@@ -115,7 +119,7 @@ export default function ProfilePage() {
         className="grid grid-cols-2 bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4"
       >
         <div className="mb-4">
-          <label htmlFor="name" className="block text-gray-700 text-sm font-bold mb-2">Nombre:</label>
+          <label htmlFor="name" className="block text-gray-700 text-sm font-bold mb-2">Nombre de la tienda:</label>
           <input
             className="shadow border rounded w-full py-2 px-3"
             type="text"
@@ -127,7 +131,7 @@ export default function ProfilePage() {
         </div>
 
         <div className="mb-4">
-          <label htmlFor="phone" className="block text-gray-700 text-sm font-bold mb-2">Teléfono:</label>
+          <label htmlFor="phone" className="block text-gray-700 text-sm font-bold mb-2">Whatsapp atencion al cliente:</label>
           <input
             className="shadow border rounded w-full py-2 px-3"
             type="text"
@@ -162,7 +166,7 @@ export default function ProfilePage() {
         {/* Nuevo campo para Facebook */}
         <div className="mb-4">
           <label htmlFor="facebook" className="block text-gray-700 text-sm font-bold mb-2">
-            Facebook <span className="text-gray-500 font-normal">(username o URL)</span>
+            Facebook <span className="text-gray-500 font-normal">(username)</span>
           </label>
           <input
             className="shadow border rounded w-full py-2 px-3"
@@ -186,12 +190,12 @@ export default function ProfilePage() {
         </div>
       </form>
       <div className="p-4 max-w-6xl mx-auto">
-      <div className="border-b border-gray-200 pb-4">
-            <h2 className="text-2xl font-bold text-blue-600 tracking-tight">
-              Ajusta lo que quieres vender
-            </h2>
-          </div>
-      <CategoryToggleList />
+        <div className="border-b border-gray-200 pb-4">
+          <h2 className="text-2xl font-bold text-blue-600 tracking-tight">
+            Ajusta lo que quieres vender
+          </h2>
+        </div>
+        <CategoryForm />
       </div>
     </div>
   );
