@@ -1,6 +1,23 @@
 import prisma from '@/app/lib/prisma';
 import { NextResponse } from 'next/server';
 
+// Función para crear headers CORS con tipo seguro
+const getCorsHeaders = (origin: string | null) => {
+  const headers: Record<string, string> = {
+    'Access-Control-Allow-Methods': 'GET, OPTIONS',
+    'Access-Control-Allow-Headers': 'Content-Type',
+  };
+  
+  // Solo incluye el origen si existe, de lo contrario usa wildcard (no recomendado para producción)
+  if (origin) {
+    headers['Access-Control-Allow-Origin'] = origin;
+  } else {
+    headers['Access-Control-Allow-Origin'] = '*'; // Solo para desarrollo
+  }
+  
+  return headers;
+};
+
 export async function POST(req: Request) {
     try {
       const body = await req.json(); // Obtiene los datos del request
@@ -33,56 +50,57 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Error interno del servidor" }, { status: 500 });
     }
   }
-// Servicio para verificar si el usuario está registradoimport prisma from '@/app/lib/prisma';
-export async function GET(req: Request) {
-  try {
-    const { searchParams } = new URL(req.url);
-    const email = searchParams.get('email');
-
-    if (!email) {
-      return NextResponse.json(
-        { error: 'Email es requerido' },
-        { status: 400 }
+  export async function GET(req: Request) {
+    try {
+      const { searchParams } = new URL(req.url);
+      const email = searchParams.get('email');
+      const origin = req.headers.get('origin');
+  
+      if (!email) {
+        return new NextResponse(
+          JSON.stringify({ error: 'Email es requerido' }), 
+          { status: 400, headers: getCorsHeaders(origin) }
+        );
+      }
+  
+      const user = await prisma.user.findUnique({
+        where: { email },
+        select: {
+          name: true,
+          phone: true,
+          facebook: true,
+          instagram: true,
+          photo: true
+        },
+      });
+  
+      if (!user) {
+        return new NextResponse(
+          JSON.stringify({ error: 'Usuario no encontrado' }),
+          { status: 404, headers: getCorsHeaders(origin) }
+        );
+      }
+  
+      return new NextResponse(
+        JSON.stringify({ user }),
+        { status: 200, headers: getCorsHeaders(origin) }
+      );
+    } catch (error) {
+      console.error('Error:', error);
+      return new NextResponse(
+        JSON.stringify({ error: 'Error en el servidor' }),
+        { status: 500 }
       );
     }
-
-    const user = await prisma.user.findUnique({
-      where: { email },
-      select: {
-        name: true,
-        phone: true,
-        facebook: true,
-        instagram: true,
-        photo: true
-      },
-    });
-
-    if (!user) {
-      return NextResponse.json(
-        { error: 'Usuario no encontrado' },
-        { status: 404 }
-      );
-    }
-
-    // Configura headers CORS para permitir acceso desde otros dominios
-    const headers = {
-      'Access-Control-Allow-Origin': '*',
-      'Access-Control-Allow-Methods': 'GET',
-      'Content-Type': 'application/json',
-    };
-
-    return NextResponse.json(
-      { user },
-      { status: 200, headers }
-    );
-  } catch (error) {
-    console.error('Error:', error);
-    return NextResponse.json(
-      { error: 'Error en el servidor' },
-      { status: 500 }
-    );
   }
-}
+  
+  // Manejador para peticiones OPTIONS (preflight)
+  export async function OPTIONS(req: Request) {
+    const origin = req.headers.get('origin');
+    return new NextResponse(null, {
+      headers: getCorsHeaders(origin)
+    });
+  }
 export async function PUT(req: Request) {
   try {
     const body = await req.json();
