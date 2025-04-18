@@ -8,8 +8,8 @@ import SigninButton from "./auth/SigninButton";
 export default function Nav() {
     // URLs de redes sociales (podrían venir de un CMS o configuración)
     const socialLinks = {
-        facebook: "https://www.facebook.com/kmilo.sb.5", // Reemplaza con tu URL
-        instagram: "https://www.instagram.com/machete_r47/s" // Reemplaza con tu URL
+        facebook: "https://www.facebook.com/share/1Gve4XZgQU/?mibextid=qi2Omg", // Reemplaza con tu URL
+        instagram: "https://www.instagram.com/tiyoshopping" // Reemplaza con tu URL
     };
 
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
