@@ -22,6 +22,9 @@ model User {
   photo      String?
   plan       Plan           @default(Basic)
   urlShop    String?
+  primaryColor String?
+  colorText  String?
+  colorWha   String?
   facebook   String?
   instagram  String?
   createdAt  DateTime       @default(now())

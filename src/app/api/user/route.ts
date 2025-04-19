@@ -50,6 +50,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Error interno del servidor" }, { status: 500 });
     }
   }
+  
   export async function GET(req: Request) {
     try {
       const { searchParams } = new URL(req.url);
@@ -71,7 +72,10 @@ export async function POST(req: Request) {
           facebook: true,
           instagram: true,
           photo: true,
-          urlShop: true
+          urlShop: true,
+          primaryColor: true,
+          colorText: true,
+          colorWha: true
         },
       });
   
@@ -105,7 +109,7 @@ export async function POST(req: Request) {
 export async function PUT(req: Request) {
   try {
     const body = await req.json();
-    const { email, name, phone, facebook, instagram } = body;
+    const { email, name, phone, facebook, instagram, primaryColor, colorText, colorWha } = body;
 
     if (!email) {
       return NextResponse.json({ error: 'Email es requerido' }, { status: 400 });
@@ -117,7 +121,10 @@ export async function PUT(req: Request) {
         name,
         phone,
         facebook,
-        instagram
+        instagram,
+        primaryColor,
+        colorText,
+        colorWha
       },
     });
 

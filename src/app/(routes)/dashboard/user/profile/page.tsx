@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import CategoryForm from "./categoriesList";
+import ColorPicker from "@/components/colorPicker";
 
 export default function ProfilePage() {
   const { data: session, status } = useSession();
@@ -15,7 +16,10 @@ export default function ProfilePage() {
     phone: "",
     instagram: "", // Nuevo campo
     facebook: "",  // Nuevo campo
-    urlShop: ""
+    urlShop: "",
+    primaryColor: "#000", // Color defecto
+    colorText: "#000",
+    colorWha: "#000"
   });
 
   useEffect(() => {
@@ -37,7 +41,10 @@ export default function ProfilePage() {
           phone: data.user?.phone || "",
           instagram: data.user?.instagram || "", // Cargar valor existente
           facebook: data.user?.facebook || "",    // Cargar valor existente
-          urlShop: data.user?.urlShop
+          urlShop: data.user?.urlShop || "",
+          primaryColor: data.user?.primaryColor || "",
+          colorText: data.user?.colorText || "",
+          colorWha: data.user?.colorWha || ""
         });
         console.log(data)
       } catch (error) {
@@ -74,7 +81,10 @@ export default function ProfilePage() {
           name: formData.name,
           phone: formData.phone,
           instagram: formData.instagram,
-          facebook: formData.facebook
+          facebook: formData.facebook,
+          primaryColor: formData.primaryColor,
+          colorText: formData.colorText,
+          colorWha: formData.colorWha
         }),
       });
 
@@ -197,6 +207,42 @@ export default function ProfilePage() {
           ) : (
             <span className="text-gray-500">Disculpanos aun no hemos configurado tu tienda</span>
           )}
+        </div>
+        <div className="mb-4 px-5">
+          <label className="block text-gray-700 text-sm font-bold mb-2">
+            Color principal de tu tienda
+          </label>
+          <div className="flex items-center gap-4">
+            <ColorPicker
+              color={formData.primaryColor}
+              onChange={(color) => setFormData({ ...formData, primaryColor: color })}
+            />
+            <span className="text-sm text-gray-600">{formData.primaryColor}</span>
+          </div>
+        </div>
+        <div className="mb-4 px-5">
+          <label className="block text-gray-700 text-sm font-bold mb-2">
+            Color del texto de tu tienda
+          </label>
+          <div className="flex items-center gap-4">
+            <ColorPicker
+              color={formData.colorText}
+              onChange={(color) => setFormData({ ...formData, colorText: color })}
+            />
+            <span className="text-sm text-gray-600">{formData.colorText}</span>
+          </div>
+        </div>
+        <div className="mb-4 px-5">
+          <label className="block text-gray-700 text-sm font-bold mb-2">
+            Color boton Whatsapp
+          </label>
+          <div className="flex items-center gap-4">
+            <ColorPicker
+              color={formData.colorWha}
+              onChange={(color) => setFormData({ ...formData, colorWha: color })}
+            />
+            <span className="text-sm text-gray-600">{formData.colorWha}</span>
+          </div>
         </div>
 
         <div className="flex items-center justify-between col-span-2">
