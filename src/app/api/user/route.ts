@@ -70,7 +70,8 @@ export async function POST(req: Request) {
           phone: true,
           facebook: true,
           instagram: true,
-          photo: true
+          photo: true,
+          urlShop: true
         },
       });
   

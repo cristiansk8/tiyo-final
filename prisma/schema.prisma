@@ -21,6 +21,7 @@ model User {
   phone      String?
   photo      String?
   plan       Plan           @default(Basic)
+  urlShop    String?
   facebook   String?
   instagram  String?
   createdAt  DateTime       @default(now())

@@ -14,7 +14,8 @@ export default function ProfilePage() {
     name: "",
     phone: "",
     instagram: "", // Nuevo campo
-    facebook: ""   // Nuevo campo
+    facebook: "",  // Nuevo campo
+    urlShop: ""
   });
 
   useEffect(() => {
@@ -35,8 +36,10 @@ export default function ProfilePage() {
           name: data.user?.name || "",
           phone: data.user?.phone || "",
           instagram: data.user?.instagram || "", // Cargar valor existente
-          facebook: data.user?.facebook || ""    // Cargar valor existente
+          facebook: data.user?.facebook || "",    // Cargar valor existente
+          urlShop: data.user?.urlShop
         });
+        console.log(data)
       } catch (error) {
         console.error("Error al obtener perfil:", error);
       } finally {
@@ -118,7 +121,7 @@ export default function ProfilePage() {
         onSubmit={handleSubmitUpdateProfile}
         className="grid grid-cols-2 bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4"
       >
-        <div className="mb-4">
+        <div className="mb-4 px-5">
           <label htmlFor="name" className="block text-gray-700 text-sm font-bold mb-2">Nombre de la tienda:</label>
           <input
             className="shadow border rounded w-full py-2 px-3"
@@ -130,7 +133,7 @@ export default function ProfilePage() {
           />
         </div>
 
-        <div className="mb-4">
+        <div className="mb-4 px-5">
           <label htmlFor="phone" className="block text-gray-700 text-sm font-bold mb-2">Whatsapp atencion al cliente:</label>
           <input
             className="shadow border rounded w-full py-2 px-3"
@@ -143,9 +146,9 @@ export default function ProfilePage() {
         </div>
 
         {/* Nuevo campo para Instagram */}
-        <div className="mb-4">
+        <div className="mb-4 px-5">
           <label htmlFor="instagram" className="block text-gray-700 text-sm font-bold mb-2">
-            Instagram <span className="text-gray-500 font-normal">(@username)</span>
+            Instagram <span className="text-gray-500 font-normal">(url ig)</span>
           </label>
           <div className="flex">
             <span className="inline-flex items-center px-3 rounded-l-md border border-r-0 border-gray-300 bg-gray-50 text-gray-500 text-sm">
@@ -164,9 +167,9 @@ export default function ProfilePage() {
         </div>
 
         {/* Nuevo campo para Facebook */}
-        <div className="mb-4">
+        <div className="mb-4 px-5">
           <label htmlFor="facebook" className="block text-gray-700 text-sm font-bold mb-2">
-            Facebook <span className="text-gray-500 font-normal">(username)</span>
+            Facebook <span className="text-gray-500 font-normal">(url fb)</span>
           </label>
           <input
             className="shadow border rounded w-full py-2 px-3"
@@ -177,6 +180,23 @@ export default function ProfilePage() {
             onChange={handleChange}
             placeholder="tuusuario"
           />
+        </div>
+        <div className="mb-4 px-5">
+          <label htmlFor="url" className="block text-gray-700 text-sm font-bold mb-2">
+            Tu tienda <span className="text-gray-500 font-normal"></span>
+          </label>
+          {formData.urlShop ? (
+            <a
+              href={formData.urlShop}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-blue-500 hover:text-blue-700 underline"
+            >
+              {formData.urlShop}
+            </a>
+          ) : (
+            <span className="text-gray-500">Disculpanos aun no hemos configurado tu tienda</span>
+          )}
         </div>
 
         <div className="flex items-center justify-between col-span-2">
