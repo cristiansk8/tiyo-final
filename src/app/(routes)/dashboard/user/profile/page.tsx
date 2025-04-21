@@ -166,9 +166,6 @@ export default function ProfilePage() {
           Instagram <span className="text-gray-500 font-normal">(url ig)</span>
         </label>
         <div className="flex">
-          <span className="inline-flex items-center px-3 rounded-l-md border border-r-0 border-gray-300 bg-gray-50 text-gray-500 text-sm">
-            @
-          </span>
           <input
             className="shadow appearance-none border rounded-r w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
             type="text"
