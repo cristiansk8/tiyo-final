@@ -126,7 +126,7 @@ export default function ProfilePage() {
             </h1>
 
             <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 mt-4">
-              <p className="text-gray-700">Únete a nuestra comunidad de clientes:</p>
+              <p className="text-gray-700">Únete a nuestra comunidad:</p>
 
               <a
                 href="https://chat.whatsapp.com/IAaovUjUTl59bR7Echh0iW"
